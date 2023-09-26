@@ -5,6 +5,8 @@ import Banner from "../components/Banner";
 import Categories from "../components/Categories";
 import Product from "../components/Product";
 import BottomTabs from "../components/BottomTabs";
+import Test from "../components/Test";
+import Home from "../components/HomeScreen";
 
 export default function HomeScreen() {
   return (
@@ -13,6 +15,7 @@ export default function HomeScreen() {
       <View>
         <Header />
         <SearchBar />
+        {/* <Test /> */}
 
 
         </View>
@@ -21,13 +24,16 @@ export default function HomeScreen() {
 
         <Categories />
         <Product />
+        
+        {/* <Home /> */}
 
         </ScrollView>
       
         <View>
-          
+             
         <BottomTabs />
         </View>
     </SafeAreaView>
+  
   );
 }

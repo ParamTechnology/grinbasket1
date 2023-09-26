@@ -1,50 +1,71 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import Swiper from 'react-native-swiper';
-import Icon from 'react-native-vector-icons/FontAwesome5'; // You can use other icon libraries too
+import firebase from 'firebase/compat/app';
+import 'firebase/firestore';
+import SearchBar from 'react-native-searchbar';
+
+
+
 
 const Banner = () => {
-    const banners = [
-      { id: 1, image: require('../assets/images/first.jpg') },
-      { id: 2, image: require('../assets/images/second.jpg') },
-      { id: 3, image: require('../assets/images/third.jpg') },
-    ];
+  const [banners, setBanners] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const firestore = firebase.firestore();
+    const bannersCollection = firestore.collection('banner');
+
+    bannersCollection.onSnapshot((snapshot) => {
+      const bannerData = [];
+      snapshot.forEach((doc) => {
+        const banner = doc.data();
+        bannerData.push(banner);
+      });
+      setBanners(bannerData);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return <ActivityIndicator size="large" style={styles.loading} />;
+  }
+
   
-    return (
-      <View style={styles.container}>
-        <Swiper
-          autoplay
-          autoplayTimeout={3} // Adjust autoplay interval (in seconds)
-          showsPagination={true} // Hide pagination dots
-        >
-          {banners.map((banner) => (
-            <View key={banner.id} style={styles.slide}>
-              <Image source={banner.image} style={styles.image} />
-            </View>
-          ))}
-        </Swiper>
-      </View>
-    );
-  };
-  
-  const styles = StyleSheet.create({
-    container: {
-      height: 150, // Adjust the height as needed
-      marginTop:10,
-      width:"90%",
-      marginLeft:20,
-      marginBottom:10
-    },
-    slide: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    image: {
-      width: '100%',
-      height: '100%',
-    },
-  });
-  
-  export default Banner;
-  
+
+  return (
+    <Swiper style={styles.wrapper} autoplay={true}>
+      {banners.map((banner, index) => (
+        <View key={index} style={styles.slide}>
+          <Image style={styles.image} source={{ uri: banner.image }} />
+        </View>
+      ))}
+    </Swiper>
+  );
+};
+
+
+
+
+const styles = StyleSheet.create({
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  wrapper: {
+    height:200
+  },
+  slide: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+});
+
+export default Banner;
